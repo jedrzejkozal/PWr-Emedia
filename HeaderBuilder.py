@@ -10,5 +10,9 @@ class HeaderBuilder(object):
         f.close()
         return self.header
 
+    def printHeader(self):
+        for prop in self.header.map:
+            print prop
+
     def build(self, filename):
         return self.header

@@ -14,7 +14,8 @@ class HeaderBuilderMP3(HeaderBuilder):
         #file.readline()
         return self.header
 
-h = HeaderBuilderMP3()
-h.header.add_property("aaa", "b")
-h.header.add_property("aax", "c")
-print h.readHeader("test2.jpg")
+if __name__ == __main__:
+    h = HeaderBuilderMP3()
+    h.header.add_property("aaa", "b")
+    h.header.add_property("aax", "c")
+    print h.readHeader("test2.jpg")
