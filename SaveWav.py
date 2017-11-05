@@ -5,6 +5,11 @@ class SaveWAV:
         self.header = header
         self.data = data
 
+        if header.get_property('SubChunk1Size') == 16:
+            self.PCM = True
+        else:
+            self.PCM = False
+
     def to_bytes(self, n, length):
         bytes = bytearray()
         for i in reversed(range(length)):
@@ -35,10 +40,13 @@ class SaveWAV:
         self.write_prop(file, 'BlockAlign', 2, True)
         self.write_prop(file, 'BitsPerSample', 2, True)
 
+        if not self.PCM:
+            self.write_prop(file, 'ExtraParamSize', 2, True)
+            self.write_prop(file, 'ExtraParams', self.header.get_property('ExtraParamSize'), True)
+
     def write_data(self, file):
         file.write('data')
         file.write(self.data)
-
 
     def write(self, file):
         self.write_descriptor(file)

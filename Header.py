@@ -1,5 +1,3 @@
-
-
 class Header:
     def __init__(self):
         self.map = {}
@@ -20,6 +18,11 @@ class Header:
         for prop in self.map:
             print prop, self.map[prop]
 
+    def __str__(self):
+        s = ""
+        for e in self.map:
+            s = s + e + ": " + str(self.map[e]) + '\n'
+        return s
 
 if __name__ == '__main__':
     h = Header ()

@@ -1,0 +1,58 @@
+#:kivy 1.1.0
+
+Root:
+    text_input: text_input
+
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: 'Load'
+                on_release: root.show_load()
+
+            Button:
+                text: 'Fourier Transform'
+                on_release: root.fourier_transform()
+
+        BoxLayout:
+            TextInput:
+                id: text_input
+                text: ''
+
+            RstDocument:
+                text: text_input.text
+                show_errors: True
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+<ErrorDialog>:
+    BoxLayout:
+        size_hint: 0.2, 0.2
+        pos_hint: {'x': 0.5, 'y': 0.5}
+        orientation: "vertical"
+
+        Button:
+            size_hint: 0.1, 0.1
+            anchor_x: 'center'
+            anchor_y: 'top'
+            text: "OK"
+            on_release: root.cancel()

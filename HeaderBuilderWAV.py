@@ -75,13 +75,13 @@ class HeaderBuilderWAV(HeaderBuilder):
             raise ValueError('BlockAlign != NumChannels * BitsPerSample/8')
 
         if not self.PCM:
-            extraParamSize = self.read_bytes(file, 2)
+            extraParamSize = self.read_bytes(file, 2, True)
             if SubChunk1Size - 16 != extraParamSize:
                 raise ValueError('BlockAlign != NumChannels * BitsPerSample/8')
             else:
                 self.header.add_property('ExtraParamSize', extraParamSize)
 
-                extraParams = self.read_bytes(file, extraParamSize)
+                extraParams = self.read_bytes(file, extraParamSize, True)
                 self.header.add_property('ExtraParams', extraParams)
 
     def read_data_subchunk(self, file):
