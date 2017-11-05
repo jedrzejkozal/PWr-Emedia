@@ -15,16 +15,21 @@ class Header:
 
     def get_property(self, name):
         return self.map[name]
-"""
-h = Header ()
-h.map["test"] = "a"
-h.map["test1"] = "b"
-print h.map
 
-h1 = Header ()
-h1.add_property("test", "a")
-h1.add_property("test1", "b")
-print h1.map
+    def printHeader(self):
+        for prop in self.map:
+            print prop, self.map[prop]
 
-print h1.get_property("test")
-"""
+
+if __name__ == '__main__':
+    h = Header ()
+    h.map["test"] = "a"
+    h.map["test1"] = "b"
+    print h.map
+
+    h1 = Header ()
+    h1.add_property("test", "a")
+    h1.add_property("test1", "b")
+    print h1.map
+
+    print h1.get_property("test")
