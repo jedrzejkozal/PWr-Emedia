@@ -14,13 +14,13 @@ class HeaderBuilderWAV(HeaderBuilder):
 
         #ChunkSize - endianess little
         #4 + (8 + SubChunk1Size) + (8 + SubChunk2Size)
-        SubChunk2Size = self.read_bytes(file, 4, True)
+        chunkSize = self.read_bytes(file, 4, True)
         #SubChunk2Size = SubChunk2Size - 36
-        self.header.add_property('SubChunk2Size', SubChunk2Size)
+        self.header.add_property('ChunkSize', chunkSize)
 
         #Format: WAVE - endianess big
         wave = self.read_bytes(file, 4)
-        #0x52494646 - RIFF in hexadecimal
+        #0x52494646 - WAVE in hexadecimal
         if wave != 0x57415645:
             raise ValueError('No WAVE in descriptor chunk.')
 
@@ -42,6 +42,7 @@ class HeaderBuilderWAV(HeaderBuilder):
         #AudioFormat  - endianess little
         audioFormat = self.read_bytes(file, 2, True)
         if self.PCM and audioFormat != 1:
+            print audioFormat
             raise ValueError('AudioFormat not equal to 1, while PCM')
         else:
             self.header.add_property('AudioFormat', audioFormat)
@@ -81,6 +82,7 @@ class HeaderBuilderWAV(HeaderBuilder):
                 self.header.add_property('ExtraParamSize', extraParamSize)
 
                 extraParams = self.read_bytes(file, extraParamSize)
+                self.header.add_property('ExtraParams', extraParams)
 
     def read_data_subchunk(self, file):
         #Subchunk2ID  - endianess big
@@ -91,20 +93,29 @@ class HeaderBuilderWAV(HeaderBuilder):
 
         #Subchunk2Size - endianess little
         subchunk2Size = self.read_bytes(file, 4, True)
-        self.header.add_property('Data_Subchunk2Size', subchunk2Size)
+        self.header.add_property('SubChunk2Size', subchunk2Size)
+        if self.header.get_property('ChunkSize') != 36 + (8+self.header.get_property('SubChunk1Size')) + (8+subchunk2Size):
+            print 'there are some bytes after data chunk'
+            print 'ChunkSize = %d' % self.header.get_property('ChunkSize')
+            print 'SubChunk1Size = %d' % self.header.get_property('SubChunk1Size')
+            print 'SubChunk2Size = %d' % subchunk2Size
+            print
 
         #actual data - endianess little
-        #data = self.read_bytes(file, subchunk2Size, True)
+        self.data = bytearray(file.read(self.header.get_property('SubChunk2Size')))
+        #self.data = bytearray(file.read())
+        #self.data = self.data[::-1]
+
+        #print file.read()
 
     def build(self, file):
         self.read_descriptor(file)
         self.read_fmt_subchunk(file)
-        self.read_data_subchunk(file)
+        data = self.read_data_subchunk(file)
 
-        return self.header
+        return self.header, self.data
 
 if __name__ == '__main__':
     h = HeaderBuilderWAV()
     h.readHeader("test3.wav")
     h.printHeader()
-    #h.revert_endianess(1, 1)

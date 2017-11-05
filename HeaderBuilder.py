@@ -15,15 +15,7 @@ class HeaderBuilder(object):
         if littleEndian:
             bc = bc[::-1]
         return self.bytearray_to_hex(bc)
-    '''
-    def revert_endianess(self, n, nBytes):
-        binary = bin(n)[2:].zfill(nBytes*8)
-        #print binary
-        binary = binary[::-1]
-        #print binary
-        n = int(binary, 2)
-        return n
-    '''
+
     def readHeader(self, filename):
         f = open(filename, 'r')
         self.build(f)
