@@ -64,6 +64,7 @@ class SaveWAV:
 if __name__ == '__main__':
     h = HeaderBuilderWAV()
     h.readHeader("test3.wav")
+    #h.readHeader("gardenss_48KHz.wav")
     h.printHeader()
 
     s = SaveWAV(h.header, h.data)

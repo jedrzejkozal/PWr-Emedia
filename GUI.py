@@ -4,6 +4,7 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.button import Button
 
 from HeaderBuilderWAV import *
 
@@ -47,11 +48,13 @@ class Root(FloatLayout):
 
     def fourier_transform(self):
         if not self.isLoaded:
+            
             content = ErrorDialog(load=self.cos, cancel=self.dismiss_popup)
             self._popup = Popup(title="File not Loaded!", content=content,
                                 size_hint=(0.9, 0.9))
             self._popup.open()
 
+            #return Button(text='Hello World')
         else:
             print 'fourier'
 

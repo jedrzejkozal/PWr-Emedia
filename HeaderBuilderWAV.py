@@ -4,6 +4,7 @@ class HeaderBuilderWAV(HeaderBuilder):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.PCM = False
+        self.data_already_read = True
 
     def read_descriptor(self, file):
         #riff  - endianess big
@@ -76,20 +77,38 @@ class HeaderBuilderWAV(HeaderBuilder):
 
         if not self.PCM:
             extraParamSize = self.read_bytes(file, 2, True)
-            if SubChunk1Size - 16 != extraParamSize:
-                raise ValueError('BlockAlign != NumChannels * BitsPerSample/8')
-            else:
+            if SubChunk1Size - 16 == extraParamSize or SubChunk1Size - 16 - 2 == extraParamSize:
                 self.header.add_property('ExtraParamSize', extraParamSize)
+                if extraParamSize != 0:
+                    extraParams = self.read_bytes(file, extraParamSize, True)
+                    self.header.add_property('ExtraParams', extraParams)
+                else:
+                    self.read_until_data(file)
+            else:
+                raise ValueError('SubChunk1Size - 16 != extraParamSize')
 
-                extraParams = self.read_bytes(file, extraParamSize, True)
-                self.header.add_property('ExtraParams', extraParams)
+    def check_if_contains_data(self, string):
+        return string == 'data'
+
+    def read_until_data(self, file):
+        data = file.read(4)
+        extraParams = ''
+        while not self.check_if_contains_data(data):
+            extraParams = extraParams + data[0]
+            data = data[1:]
+            data = data + file.read(1)
+
+        self.header.add_property('ExtraParams', extraParams)
+        self.data_already_read = True
 
     def read_data_subchunk(self, file):
         #Subchunk2ID  - endianess big
-        data = self.read_bytes(file, 4)
-        #0x64617461 - data in hexadecimal
-        if data != 0x64617461:
-            raise ValueError('No data in data chunk.')
+        if not self.data_already_read:
+            data = self.read_bytes(file, 4)
+            #0x64617461 - data in hexadecimal
+            if data != 0x64617461:
+                print data
+                raise ValueError('No data in data chunk.')
 
         #Subchunk2Size - endianess little
         subchunk2Size = self.read_bytes(file, 4, True)
@@ -118,4 +137,5 @@ class HeaderBuilderWAV(HeaderBuilder):
 if __name__ == '__main__':
     h = HeaderBuilderWAV()
     h.readHeader("test3.wav")
+    #h.readHeader("gardenss_48KHz.wav")
     h.printHeader()
