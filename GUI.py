@@ -4,6 +4,8 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+import matplotlib.pyplot as plt
+import numpy as np
 
 from HeaderBuilderWAV import *
 
@@ -35,12 +37,41 @@ class Root(FloatLayout):
                             size_hint=(0.9, 0.9))
         self._popup.open()
 
+    def display_samples_fft(self, samples, sample_rate,num_channels):
+        #time vector
+        n = len(samples)
+        k = np.arange(n)
+        T = float(n) / sample_rate
+        freq = k/T
+        freq = freq[range(n/2)]
+
+        fig, ax = plt.subplots(num_channels, 1)
+
+        for i in range(0,num_channels):
+            plt.figure(1)
+            #calculate fft and normalize results
+            y = np.fft.fft(samples[:,1])/n
+            y = y[range(n/2)]
+            ax[i].plot(freq,abs(y))
+            ax[i].set_title('Channel {} FFT'.format(i+1))
+            ax[i].set_xlabel('Freq (Hz)')
+        plt.show();
+
+
     def load(self, path, filename):
         h = HeaderBuilderWAV()
         h.readHeader(os.path.join(path, filename[0]))
         self.text_input.text = str(h.header)
+        sample_rate = h.header.get_property("SampleRate")
+        num_channels = h.header.get_property("NumChannels")
+
+        # display first 1000 samples
+        self.display_samples_fft(h.data[0:1000],sample_rate,num_channels);
+
         self.dismiss_popup()
         self.isLoaded = True
+
+
 
     def cos(self):
         self.dismiss_popup()

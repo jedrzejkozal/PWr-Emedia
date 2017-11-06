@@ -1,4 +1,5 @@
 from HeaderBuilder import HeaderBuilder
+from scipy.io import wavfile
 
 class HeaderBuilderWAV(HeaderBuilder):
     def __init__(self):
@@ -76,13 +77,13 @@ class HeaderBuilderWAV(HeaderBuilder):
 
         if not self.PCM:
             extraParamSize = self.read_bytes(file, 2, True)
-            if SubChunk1Size - 16 != extraParamSize:
-                raise ValueError('BlockAlign != NumChannels * BitsPerSample/8')
-            else:
-                self.header.add_property('ExtraParamSize', extraParamSize)
+          #  if SubChunk1Size - 16 != extraParamSize:
+          #      raise ValueError('BlockAlign != NumChannels * BitsPerSample/8')
 
-                extraParams = self.read_bytes(file, extraParamSize, True)
-                self.header.add_property('ExtraParams', extraParams)
+            self.header.add_property('ExtraParamSize', extraParamSize)
+
+            extraParams = self.read_bytes(file, extraParamSize, True)
+            self.header.add_property('ExtraParams', extraParams)
 
     def read_data_subchunk(self, file):
         #Subchunk2ID  - endianess big
@@ -102,7 +103,7 @@ class HeaderBuilderWAV(HeaderBuilder):
             print
 
         #actual data - endianess little
-        self.data = bytearray(file.read(self.header.get_property('SubChunk2Size')))
+        #self.data = bytearray(file.read(self.header.get_property('SubChunk2Size')))
         #self.data = bytearray(file.read())
         #self.data = self.data[::-1]
 
@@ -111,9 +112,10 @@ class HeaderBuilderWAV(HeaderBuilder):
     def build(self, file):
         self.read_descriptor(file)
         self.read_fmt_subchunk(file)
-        data = self.read_data_subchunk(file)
+        #get only detoded samples
+        self.data = wavfile.read(self.filename, 'r')[1]
 
-        return self.header, self.data
+
 
 if __name__ == '__main__':
     h = HeaderBuilderWAV()
