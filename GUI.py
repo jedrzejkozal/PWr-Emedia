@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 
 from HeaderBuilderWAV import *
+from HeaderBuilderBMP import *
 
 import os
 
@@ -37,7 +38,12 @@ class Root(FloatLayout):
         self._popup.open()
 
     def load(self, path, filename):
-        h = HeaderBuilderWAV()
+        if filename[0][-4:] == ".wav":
+            h = HeaderBuilderWAV()
+        elif filename[0][-4:] == ".bmp":
+            h = HeaderBuilderBMP()
+        else:
+            raise ValueError('Not known extension of file')
         h.readHeader(os.path.join(path, filename[0]))
         self.text_input.text = str(h.header)
         self.dismiss_popup()
@@ -48,7 +54,7 @@ class Root(FloatLayout):
 
     def fourier_transform(self):
         if not self.isLoaded:
-            
+
             content = ErrorDialog(load=self.cos, cancel=self.dismiss_popup)
             self._popup = Popup(title="File not Loaded!", content=content,
                                 size_hint=(0.9, 0.9))
