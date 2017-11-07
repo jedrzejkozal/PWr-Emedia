@@ -74,14 +74,23 @@ class Root(FloatLayout):
 
         fig, ax = plt.subplots(num_channels, 1)
 
+
         for i in range(0,num_channels):
             plt.figure(1)
+
             #calculate fft and normalize results
-            y = np.fft.fft(samples[:,1])/n
-            y = y[range(n/2)]
-            ax[i].plot(freq,abs(y))
-            ax[i].set_title('Channel {} FFT'.format(i+1))
-            ax[i].set_xlabel('Freq (Hz)')
+            if num_channels is 1:
+                y = np.fft.fft(samples) / n
+                y = y[range(n / 2)]
+                plt.plot(freq,abs(y))
+                plt.title('Channel {} FFT'.format(i+1))
+                plt.xlabel('Freq (Hz)')
+            else:
+                y = np.fft.fft(samples[:,i])/n
+                y = y[range(n/2)]
+                ax[i].plot(freq,abs(y))
+                ax[i].set_title('Channel {} FFT'.format(i+1))
+                ax[i].set_xlabel('Freq (Hz)')
         plt.show()
 
     def display_bmp_fft(self, samples):
