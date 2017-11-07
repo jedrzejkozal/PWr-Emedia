@@ -1,5 +1,7 @@
 from HeaderBuilder import HeaderBuilder
 from scipy import fftpack, ndimage
+from PIL import Image
+import numpy as np
 
 class HeaderBuilderBMP(HeaderBuilder):
     def __init__(self):
@@ -87,8 +89,8 @@ class HeaderBuilderBMP(HeaderBuilder):
     def build(self, file):
         self.read_h(file)
 
-        self.data = ndimage.imread(self.filename, flatten=False)
-
+        img = Image.open(self.filename).convert('L')
+        self.data = np.asarray(img.getdata()).reshape(img.size)
         return self.header, self.data
 
 if __name__ == '__main__':

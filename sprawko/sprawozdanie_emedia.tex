@@ -140,6 +140,12 @@ W trakcie odczytu pliku w GUI na podstawie rozszerzenia wybranego pliku zostaje 
 \caption{Diagram wykorzystanych klas}
 \end{figure}
 
+\section{Szybka Transformata Furiera}
+\subsection{FFT pliku dzwiękowego w formacie WAV}
+W przypadku pliku WAV będziemy mieć do czynienia z jednowymiarową transformatą każdego z kanałów. Można zauważyć ze częstotliwość próbkowania dla plików dźwiękowych to najczęściej 44kHz i 48kHz. Wynika to z faktu iż ludzie ucho jest w stanie odebrać dźwięki o częstotliwości do około 20kHz. Zgodnie z twierdzeniem Kotielnikowa-Shannona potrzebujemy co najmniej dwa razy większej częstotliwości próbkowania aby poprawie zarejestrować taki sygnał.
+
+\subsection{FFT pliku graficznego w formacie BMP}
+Obrazy w formacie BMP zostały poddane 2-wymiarowe FFT. Obraz został najpierw poddany operacji desaturacji. W przypadku obrazu częstotliwość oznacza szybkość zmian jasności w obrazie. Dominujące częstotliwości skupione są w centrum wykresu.
 
 \newpage
 \begin{thebibliography}{9}

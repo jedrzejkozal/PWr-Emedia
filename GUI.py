@@ -95,9 +95,8 @@ class Root(FloatLayout):
 
     def display_bmp_fft(self, samples):
         plt.figure(1)
-        fft2 = fftpack.fft2(samples)
-
-        plt.imshow(abs(fft2))
+        fft = fftpack.fft2(samples)
+        plt.imshow(np.abs(np.fft.fftshift(fft)), interpolation='nearest')
         plt.show()
 
     def fourier_transform(self):
