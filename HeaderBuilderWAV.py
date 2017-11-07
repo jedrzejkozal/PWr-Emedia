@@ -1,4 +1,5 @@
 from HeaderBuilder import HeaderBuilder
+from scipy.io import wavfile
 
 class HeaderBuilderWAV(HeaderBuilder):
     def __init__(self):
@@ -121,7 +122,7 @@ class HeaderBuilderWAV(HeaderBuilder):
             print
 
         #actual data - endianess little
-        self.data = bytearray(file.read(self.header.get_property('SubChunk2Size')))
+        #self.data = bytearray(file.read(self.header.get_property('SubChunk2Size')))
         #self.data = bytearray(file.read())
         #self.data = self.data[::-1]
 
@@ -130,7 +131,8 @@ class HeaderBuilderWAV(HeaderBuilder):
     def build(self, file):
         self.read_descriptor(file)
         self.read_fmt_subchunk(file)
-        data = self.read_data_subchunk(file)
+        #get only decoded samples
+        self.data = wavfile.read(self.filename, 'r')[1]
 
         return self.header, self.data
 

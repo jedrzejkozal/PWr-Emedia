@@ -1,8 +1,10 @@
 from HeaderBuilder import HeaderBuilder
+from scipy import fftpack, ndimage
 
 class HeaderBuilderBMP(HeaderBuilder):
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.data = ''
 
     def read_h(self, file):
         #signature, must be 4D42 hex
@@ -85,9 +87,9 @@ class HeaderBuilderBMP(HeaderBuilder):
     def build(self, file):
         self.read_h(file)
 
-        data = bytearray(file.read())
+        self.data = ndimage.imread(self.filename, flatten=False)
 
-        return self.header, data
+        return self.header, self.data
 
 if __name__ == '__main__':
     h = HeaderBuilderBMP()

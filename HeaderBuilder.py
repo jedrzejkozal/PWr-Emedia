@@ -3,6 +3,7 @@ from Header import Header
 class HeaderBuilder(object):
     def __init__(self):
         self.header = Header()
+        self.filename = ""
 
     def bytearray_to_hex(self, array):
         h = 0
@@ -17,6 +18,7 @@ class HeaderBuilder(object):
         return self.bytearray_to_hex(bc)
 
     def readHeader(self, filename):
+        self.filename = filename
         f = open(filename, 'r')
         self.build(f)
         f.close()
