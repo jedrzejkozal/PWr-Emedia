@@ -99,7 +99,9 @@ class HeaderBuilderWAV(HeaderBuilder):
             data = data[1:]
             data = data + file.read(1)
 
-        self.header.add_property('ExtraParams', extraParams)
+        extraParams = extraParams[::-1]
+        intExtrParams = self.bytearray_to_hex(bytearray(extraParams))
+        self.header.add_property('ExtraParams', intExtrParams)
         self.data_already_read = True
 
     def read_data_subchunk(self, file):
@@ -138,6 +140,7 @@ class HeaderBuilderWAV(HeaderBuilder):
 
 if __name__ == '__main__':
     h = HeaderBuilderWAV()
-    h.readHeader("test3.wav")
+    #h.readHeader("test3.wav")
     #h.readHeader("gardenss_48KHz.wav")
+    h.readHeader("allwrong.wav")
     h.printHeader()
