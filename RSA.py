@@ -1,5 +1,6 @@
 from Crypto.Util import number
 from fractions import gcd
+from random import randint
 
 from HeaderBuilderWAV import *
 from HeaderBuilderBMP import *
@@ -7,6 +8,7 @@ from HeaderBuilderBMP import *
 
 class RSA():
     def __init__(self):
+
         p = self.generate_prime()
         q = self.generate_prime()
 
@@ -15,6 +17,12 @@ class RSA():
         self.e = self.get_coprime_number(self.fi)
         self.d = self.calc_d()
 
+        self.debug = False
+        if self.debug:
+            self.printing_debugs()
+
+
+    def printing_debugs(self):
         print "fi = %d" % self.fi
         print "e  = %d" % self.e
         print "d  = %d" % self.d
@@ -50,13 +58,6 @@ class RSA():
             return self.calc_coprime_to_n(n)
         return 0
 
-    def euclid_algo(self, x, y):
-        if x < y: # We want x >= y
-            return self.euclid_algo(y, x)
-        while y != 0:
-            (x, y) = (y, x % y)
-        return x
-
     def xgcd(self, b, n):
         x0, x1, y0, y1 = 1, 0, 0, 1
         while n != 0:
@@ -68,57 +69,80 @@ class RSA():
         return  b, x0, y0
 
     def calc_d(self):
-        #d = self.euclid_algo(self.e, self.fi)
         _, d, _ = self.xgcd(self.e, self.fi)
-        print "d*self.e mod self.fi = %d" % (d*self.e % self.fi)
-        print
+        #print "d*self.e mod self.fi = %d" % (d*self.e % self.fi)
+        #print
         return d
 
     def to_power_modulo(self, base, power, modulo):
         bits = bin(power)[2:]
+        bits = bits[::-1]
 
-        res = [base % modulo]
-        for i in range(len(bits)-1):
-            res.append(res[i-1]**2 % modulo)
+        if self.debug:
+            print bits
+
+        rests = [base % modulo]
+        for i in range(1, len(bits)):
+            rests.append(rests[i-1]**2 % modulo)
+
+        if self.debug:
+            print 'rests table:'
+            print rests
+            print 'couting lop:'
 
         i = 0
         result = 1
-        for bit in reversed(bits):
-            if bit == 1:
-                result = (result * res[i]) % modulo
+        for bit in bits:
+            #print bit
+            if bit == '1':
+                result = (result * rests[i]) % modulo
+                #print result
             i += 1
 
-        #print result
+        if self.debug:
+            print 'result:'
+            print result
 
-        return 0
+        return result
 
     def to_power_modulo1(self, base, power, modulo):
         return base**power % modulo
 
     def encrypt(self, T):
-        en = T**self.e % self.n
-        print "encrpted: %d" % en
-        print
+        #en = T**self.e % self.n
+        en = self.to_power_modulo(T, self.e, self.n)
+        if self.debug:
+            print "encrpted: %d" % en
+            print
         return en
 
     def decrypt(self, C):
-        power = C**self.d
-        print "power = %d" % power
-        print
-        dec = power % self.n
-        print "decrypted: %d" % dec
-        print
+        #dec = C**self.d % self.n
+        dec = self.to_power_modulo(C, self.d, self.n)
+        if self.debug:
+            print "decrypted: %d" % dec
+            print
         return dec
 
 if __name__ == '__main__':
     r = RSA()
     '''
-    data = 123
+    data = 56567
     enc = r.encrypt(data)
     r.decrypt(enc)
     '''
+    for i in range(1000):
+        power = randint(2,100)
+        exponent = randint(2, 100)
+        modulo = randint(2, 100)
 
-    print
-    print "results"
-    print r.to_power_modulo(11,5, 3)
-    print r.to_power_modulo1(11,5, 3)
+        r1 = r.to_power_modulo(power, exponent, modulo)
+        r2 = r.to_power_modulo1(power, exponent, modulo)
+        if r1 != r2:
+            print
+            print "results"
+            print r1
+            print r2
+            #r.to_power_modulo(2, 5, 3)
+
+    print "test finished"
