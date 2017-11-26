@@ -1,0 +1,119 @@
+\documentclass{article}
+
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+
+
+\title{Praca inżynierska}
+\date{2017-10-01}
+\author{Jędrzej Kozal, Karol Szpila}
+
+\begin{document}
+
+\begin{titlepage}
+	\centering
+	\includegraphics[width=0.25\textwidth]{logo_pol_wroclaw.png}\par\vspace{1cm}
+	{\scshape\LARGE Politechnika Wrocławska \par}
+	\vspace{1cm}
+	{\scshape\Large E-media\par}
+	\vspace{1.5cm}
+	{\huge\bfseries Sprawozdanie z projektu, część 2 \par}
+	\vspace{2cm}
+	{\Large\itshape Karol Szpila, Jędrzej Kozal\par}
+	\vfill
+	prowadzący\par
+	Dr hab.~Wojciech \textsc{Bożejko}, prof. nadzw. PWr
+
+	\vfill
+
+% Bottom of the page
+	{\large 2017-10-01\par}
+\end{titlepage}
+
+\section{Wstęp}
+Druga część projektu polegała na zaimplementowaniu wybranego algorytmu szyfrowania niesymetrycznego i wykorzystania tego algorytmu zaszyfrowania masy bitowej z poprzedniej części projektu. Weryfikacja poprawności wykonania ćwiczenia miała odbyć się przez wyświetlenie transformaty Fouriera, następnie zaszyfrowanie i odszyfrowanie pliku oraz ponowne wyświetlenie transformaty Fouriera. W ramach tego projektu zaimplementowano algorytm RSA.
+
+\subsection{Wykorzystane narzędzia}
+W drugiej częsci projektu zostały wykorzystane wszystkie narzędzia z poprzedniej części. Dodatkowo przy implementacji algorytmu RSA wykorzystano pakiety Crypto.Util oraz fractions do odpowiednio losowania liczb pierwszych oraz wyznaczania największego wspólnego dzielnika.
+
+\subsection{Wstęp teoretyczny}
+Algorytm RSA jest algorytmem szyforwania kluczem niesymetrycznym, co oznacza że istnieje para kluczy: publiczny i prywatny. Klucz publiczny jest udostępniany każdemu kto chce wysłać wiadomość do osoby generującej klucze. Zaszyfrowana wiadomość może być odszyfrowywana tylko z wykorzystaniem klucza prywatnego, który nie jest ogólnie dostępny.
+
+Napisać coś po kolei o tych wszystkich parametrach:
+p, q - duże liczby pierwsze
+
+Zaszyfrowanie wiadomości T odbywa się w następujący sposób:
+\begin{equation}
+	E = T^e \; mod \; n
+\end{equation}
+
+Następnie odszyfrowanie wiadomości odbywa się zgodnie ze wzorem:
+\begin{equation}
+	T = E^d \; mod \; n
+\end{equation}
+
+Nasuwa się pewien problem zwizany z koniecznością operowania na bardzo dużych liczbach całkowitych. Problem ten można ominąć przez wykorzystanie następujących własności matematycznych:
+
+Przyjmijmy dowolną liczbę całkowitą $a$ postaci:
+\begin{equation}
+	a = pn + r
+\end{equation}
+, gdzie r to reszta z dzielenia a przez n. Z definicji mamy więc:
+\begin{equation}
+	a \; mod \; n = r
+\end{equation}
+
+Korzystając z powyższych definicji można z łatwością wyprowadzić:
+\begin{equation}
+	a^2 = (pn + r)^2 = p^2 n^2 + 2 p n r + r^2
+\end{equation}
+
+\begin{equation}
+	a^2 \; mod \; n = ((p^2 n + 2 p r) n + r^2) \; mod \; n \\
+	= r^2 \; mod \; n
+\end{equation}
+
+Jeśli wykładnik we wzorze (2) i (3) zapiszemy w formie binarnej, to powyższy wzór może zostać wykorzystany do generacji kolejnych reszt z dzielenia przez kolejne bity. Takie indukcyjne podejście do problemu podowduje że w każdym kroku mamy do czynienia z liczbami nie większymi niż $n - 1$. Zapsując wykładnik ze wzoru (2) i (3) jako sumę bitów możemy przejść do obliczania reszty z dzielenia iloczynu liczb:
+
+\begin{equation}\label{eq:pareto mle2} 
+	\begin{aligned}
+		a = b n + r_a \\
+		c = d n + r_c	
+	\end{aligned}
+\end{equation}
+
+\begin{equation*}\label{eq:pareto mle2}
+	\begin{aligned}
+		a c \; mod \; n = ((b n + r_a)(d n + r_c)) \; mod \; n  \\
+		= ((b d n + b r_c + d r_a) n + r_a r_c) \; mod \; n = (r_a r_c) \; mod \; n
+	\end{aligned}
+\end{equation*}	
+
+Korzystając z powyższych własności i binarnej reprezentacji wykładnika można utworzyć tablicę przechowującą wartości wyrażenia $a^b \; mod \; n$, gdzie b to kolejne potęgi dwójki (kolejne wartości pojedyńczych bitów). Następnie korzystając z równania (7) można iterując po bitach b, wymnarzając kolejne wartości z tablicy (jeśli bit jest równy 1), oraz wykonując działanie modulo otrzymujemy poprawny wynik działania. 
+
+
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{wav} 
+Przykład działania algorytmu RSA,
+\\\texttt{http://www.cryer.co.uk/glossary/r/rsa/an\_example\_of\_rsa\_algorithm.html}
+
+\bibitem{bmpB} 
+Obliczanie prywatnego wykładnika,
+\\\texttt{https://crypto.stackexchange.com/questions/5889/calculating-rsa-\\private-exponent-when-given-public-exponent-and-the-modulus-fact}
+
+\bibitem{bmp} 
+Opis rozszerzonego alogrytmu Euklidesa,
+\\\texttt{https://en.wikipedia.org/wiki/Extended\_Euclidean\_algorithm}
+
+\bibitem{kivy}
+Twierdzenie Eulera,
+\\\texttt{https://en.wikipedia.org/wiki/Euler\%27s\_theorem}
+
+\end{thebibliography}
+
+\end{document}
