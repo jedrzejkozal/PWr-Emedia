@@ -110,7 +110,8 @@ class RSA():
 
     def encrypt(self, T):
         #en = T**self.e % self.n
-        en = self.to_power_modulo(T, self.e, self.n)
+        #en = self.to_power_modulo(T, self.e, self.n)
+
         if self.debug:
             print "encrpted: %d" % en
             print
@@ -131,18 +132,5 @@ if __name__ == '__main__':
     enc = r.encrypt(data)
     r.decrypt(enc)
     '''
-    for i in range(1000):
-        power = randint(2,100)
-        exponent = randint(2, 100)
-        modulo = randint(2, 100)
 
-        r1 = r.to_power_modulo(power, exponent, modulo)
-        r2 = r.to_power_modulo1(power, exponent, modulo)
-        if r1 != r2:
-            print
-            print "results"
-            print r1
-            print r2
-            #r.to_power_modulo(2, 5, 3)
-
-print "test finished"
+    

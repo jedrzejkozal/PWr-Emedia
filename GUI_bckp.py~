@@ -4,7 +4,7 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 from enum import Enum
-from RSAModule import RSAModule
+from RSA import RSA
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 import matplotlib.pyplot as plt
@@ -15,9 +15,7 @@ from HeaderBuilderWAV import *
 from HeaderBuilderBMP import *
 
 import os
-split_string = lambda x, n: [x[i:i+n] for i in range(0, len(x), n)]
 
-dataTest =''
 class FILETYPE(Enum):
     WAV = 1
     BMP = 2
@@ -42,7 +40,7 @@ class Root(FloatLayout):
         self.isLoaded = False
         self.loaded_file = FILETYPE.UNKNOWN
         self.h = ''
-        self.rsaModule = RSAModule()
+        self.rsaModule = RSA()
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -146,24 +144,32 @@ class Root(FloatLayout):
             file = open(self.h.filename,"rb")
             image = file.read()
             file.close()
-            header = image[:54]
-            data = image[54:]
 
-            
-            dataChunks = split_string(data,128)
-            file = open("buffor.bmp","wb")
-            file.write(header)
-            for chunk in dataChunks:
-                enc = self.rsaModule.encrypt(chunk)
-                file.write(''.join(enc))
-            #dec = self.rsaModule.decrypt(enc)
-            #if(data == dec):
-            #    print 'good'
-            #print(np.fromstring(dec, dtype=np.uint8))
+            header = image[:54]
+            data = image[54:84]
+            enc = self.rsaModule.encrypt(np.transpose(np.fromstring(data, dtype=np.uint8)))
+            dec = self.rsaModule.decrypt(enc)     
+            print(np.fromstring(data, dtype=np.uint8)[0:10])
+            print(dec[0:10])
+            print(len(dec))
+            print(len(data))
+            print([ord(c) for c in data[0:10]])
+            print(dec[0:10])
+            file = open("example2.bmp","wb")
+            for i in range(len(dec)):
+                if dec[i] > 255:
+                    print('RSA error')
+                    self.moduleRSA = RSA()
+                    return
+                        
+            d = [int(v) for v in dec]
+            d2 = [chr(v) for v  in d]
+            print(d2)
+            file.write(header.join(d2))
             file.close()
             print("--------------------------------------")
 
-
+    
 
     def decrypt(self):
         if not self.isLoaded:
@@ -183,17 +189,18 @@ class Root(FloatLayout):
             file.close()
             header = image[:54]
             data = image[54:]
-            dataChunks = split_string(data,256)
+            print(np.fromstring(data, dtype=np.uint8)[0:10])
+            #dec = self.rsaModule.decrypt(np.fromstring(data, dtype=np.uint8))
+            #file = open("example22.bmp","wb")
+            #file.write(header+dec.tobytes())
+            #file.close()
 
-            file = open("example22.bmp","wb")
-            file.write(header)
-            for chunk in dataChunks:
-                print len(chunk)
-                dec = self.rsaModule.decrypt(chunk)
-                file.write(''.join(dec))
-                
-            file.close()
-
+            
+            #dec = rsaModule.decrypt(enc)
+            #if (self.h.data==dec).all:
+            #    print "good"
+            #else:
+            #    print "bad"
 class Wavreader(App):
     pass
 

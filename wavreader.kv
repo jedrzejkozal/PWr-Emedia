@@ -2,7 +2,8 @@
 
 Root:
     text_input: text_input
-
+    text_input2: text_input2
+    
     BoxLayout:
         orientation: 'vertical'
         BoxLayout:
@@ -15,6 +16,14 @@ Root:
             Button:
                 text: 'Fourier Transform'
                 on_release: root.fourier_transform()
+		
+            Button:
+                text: 'Encrypt'
+                on_release: root.encrypt()
+
+            Button:
+                text: 'Decrypt'
+                on_release: root.decrypt()
 
         BoxLayout:
             TextInput:
@@ -22,9 +31,18 @@ Root:
                 text: ''
 
             RstDocument:
-                text: text_input.text
+                text: text_input2.text
+                show_errors: True
+		
+            TextInput:
+                id: text_input2
+                text: ''
+		
+            RstDocument:
+                text: text_input2.text
                 show_errors: True
 
+		
 <LoadDialog>:
     BoxLayout:
         size: root.size

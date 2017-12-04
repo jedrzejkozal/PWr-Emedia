@@ -5,6 +5,8 @@ from random import randint
 from HeaderBuilderWAV import *
 from HeaderBuilderBMP import *
 
+from Crypto.PublicKey import RSA
+from Crypto import Random
 
 class RSA():
     def __init__(self):
@@ -20,8 +22,9 @@ class RSA():
         self.debug = False
         if self.debug:
             self.printing_debugs()
-
-
+        random_generator = Random.new().read
+        self.key = RSA.generate(1024, random_generator)
+        
     def printing_debugs(self):
         print "fi = %d" % self.fi
         print "e  = %d" % self.e
@@ -110,7 +113,9 @@ class RSA():
 
     def encrypt(self, T):
         #en = T**self.e % self.n
-        en = self.to_power_modulo(T, self.e, self.n)
+        #en = self.to_power_modulo(T, self.e, self.n)
+        public_key = key.publickey()
+        enc_data = public_key.encrypt(T, 32)
         if self.debug:
             print "encrpted: %d" % en
             print
@@ -118,7 +123,8 @@ class RSA():
 
     def decrypt(self, C):
         #dec = C**self.d % self.n
-        dec = self.to_power_modulo(C, self.d, self.n)
+        #dec = self.to_power_modulo(C, self.d, self.n)
+        key.decrypt(C)
         if self.debug:
             print "decrypted: %d" % dec
             print
@@ -131,18 +137,5 @@ if __name__ == '__main__':
     enc = r.encrypt(data)
     r.decrypt(enc)
     '''
-    for i in range(1000):
-        power = randint(2,100)
-        exponent = randint(2, 100)
-        modulo = randint(2, 100)
 
-        r1 = r.to_power_modulo(power, exponent, modulo)
-        r2 = r.to_power_modulo1(power, exponent, modulo)
-        if r1 != r2:
-            print
-            print "results"
-            print r1
-            print r2
-            #r.to_power_modulo(2, 5, 3)
 
-print "test finished"
